@@ -51,3 +51,53 @@ if (btnContact) {
         status.textContent = "Message sent successfully!";
     });
 }
+
+const signupForm = document.getElementById("signup-form");
+
+if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("signup-email").value.trim();
+        const password = document.getElementById("signup-password").value;
+        const name = document.getElementById("signup-name").value.trim();
+
+        if (!email || !password || !name) {
+            return alert("Please fill in all fields.");
+        }
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            await setDoc(doc(db, "users", user.uid), {
+                name: name,
+                email: email,
+                createdAt: new Date().toISOString()
+            });
+
+            alert("Signup successful!");
+            window.location.href = "index.html";
+        } catch (error) {
+            alert("Error during signup: " + error.message);
+        }
+    });
+}
+
+const loginForm = document.getElementById("login-form");
+
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = "index.html";
+        } catch (error) {
+            alert("Login failed: " + error.message);
+        }
+    });
+}
+
